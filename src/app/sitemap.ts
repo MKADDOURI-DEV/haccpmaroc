@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '', priority: 1.0 },
     { path: '/features', priority: 0.8 },
     { path: '/solutions-by-industry', priority: 0.8 },
+    { path: '/solutions-agroalimentaires', priority: 0.9 },
     { path: '/blog', priority: 0.8 },
     { path: '/about', priority: 0.5 },
     { path: '/contact', priority: 0.8 },
@@ -26,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     .reduce((max, v) => (v > max ? v : max), 0);
 
   if (latestUpdate > 0) {
-    pages[3] = { ...pages[3], lastModified: new Date(latestUpdate) };
+    pages[4] = { ...pages[4], lastModified: new Date(latestUpdate) };
   }
 
   return pages;

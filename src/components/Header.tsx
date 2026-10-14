@@ -28,6 +28,7 @@ export default function Header() {
     { href: '/', label: t.nav.home },
     { href: '/features', label: t.nav.features },
     { href: '/solutions-by-industry', label: t.nav.solutions },
+    { href: '/solutions-agroalimentaires', label: t.nav.agro },
     { href: '/blog', label: t.nav.blog },
     { href: '/about', label: t.nav.about },
   ];
@@ -46,7 +47,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Navigation principale">
+        <nav className="hidden items-center gap-6 xl:flex" aria-label="Navigation principale">
           {links.map((l) => (
             <Link
               key={l.href}
@@ -82,7 +83,7 @@ export default function Header() {
           </div>
 
           <Link
-            href="/contact"
+            href="/contact?demande=demo"
             className="hidden min-h-[44px] items-center rounded-full bg-accent px-5 text-sm font-semibold text-accent-foreground transition-transform hover:scale-[1.03] sm:inline-flex"
           >
             {t.nav.cta}
@@ -91,7 +92,7 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-primary lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-primary xl:hidden"
             aria-label="Menu"
             aria-expanded={open}
           >
@@ -101,8 +102,8 @@ export default function Header() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 top-[72px] z-40 bg-background/95 px-6 py-8 backdrop-blur-xl lg:hidden">
-          <nav className="flex flex-col gap-2" aria-label="Menu mobile">
+        <div className="fixed inset-0 top-[72px] z-40 overflow-y-auto bg-background/95 px-6 py-8 backdrop-blur-xl xl:hidden">
+          <nav className="flex max-h-full flex-col gap-2 overflow-y-auto" aria-label="Menu mobile">
             {links.map((l) => (
               <Link
                 key={l.href}
@@ -114,7 +115,7 @@ export default function Header() {
               </Link>
             ))}
             <Link
-              href="/contact"
+              href="/contact?demande=demo"
               onClick={() => setOpen(false)}
               className="mt-4 inline-flex min-h-[48px] items-center justify-center rounded-full bg-accent px-6 text-base font-semibold text-accent-foreground"
             >

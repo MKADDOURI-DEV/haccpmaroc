@@ -1,20 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Icon from '@/components/ui/AppIcon';
 import { useTranslation } from '@/context/LanguageContext';
-import { siteConfig, whatsappLink } from '@/config/site';
+import { siteConfig, hasEmail, hasWhatsapp, whatsappLink } from '@/config/site';
+import { contactSectorIds } from '@/config/agro-images';
+
+const requestIds = ['demo', 'devis', 'contact'];
 
 interface FormState {
   name: string;
   email: string;
   phone: string;
   company: string;
-  type: string;
+  type: string; // index in t.contact.types as string ('' = none)
+  request: string; // index in requestIds
   city: string;
   sites: string;
   message: string;
   consent: boolean;
+  website: string; // honeypot — must stay empty
 }
 
 type Errors = Partial<Record<keyof FormState, string>>;
@@ -25,10 +31,12 @@ const initial: FormState = {
   phone: '',
   company: '',
   type: '',
+  request: '0',
   city: '',
-  sites: '1',
+  sites: '',
   message: '',
   consent: false,
+  website: '',
 };
 
 const fieldClass =
@@ -36,9 +44,23 @@ const fieldClass =
 
 export default function ContactForm() {
   const { t } = useTranslation();
+  const params = useSearchParams();
   const [values, setValues] = useState<FormState>(initial);
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+
+  // Pre-fill request type and sector from the link the visitor clicked (?demande=devis&secteur=stockage)
+  useEffect(() => {
+    const demande = params?.get('demande');
+    const secteur = params?.get('secteur');
+    const reqIndex = demande ? requestIds.indexOf(demande) : -1;
+    const secIndex = secteur ? contactSectorIds.indexOf(secteur) : -1;
+    setValues((prev) => ({
+      ...prev,
+      request: reqIndex >= 0 ? String(reqIndex) : prev.request,
+      type: secIndex >= 0 ? String(secIndex) : prev.type,
+    }));
+  }, [params]);
 
   const update = (key: keyof FormState, value: string | boolean) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -55,7 +77,6 @@ export default function ContactForm() {
     else if (!/^[0-9 ()-]{6,}$/.test(values.phone)) e.phone = t.contact.errors.phone;
     if (!values.company.trim()) e.company = req;
     if (!values.type) e.type = req;
-    if (!values.city.trim()) e.city = req;
     if (!values.consent) e.consent = t.contact.errors.consent;
     return e;
   };
@@ -71,7 +92,21 @@ export default function ContactForm() {
       const res = await fetch(siteConfig.leadEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...values, phone: `+212 ${values.phone}` }),
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          phone: `+212 ${values.phone}`,
+          company: values.company,
+          sector: contactSectorIds[Number(values.type)] ?? values.type,
+          sectorLabel: t.contact.types[Number(values.type)] ?? '',
+          requestType: requestIds[Number(values.request)] ?? 'demo',
+          need: values.message,
+          city: values.city,
+          sites: values.sites,
+          consent: values.consent,
+          website: values.website,
+          page: typeof window !== 'undefined' ? window.location.href : '',
+        }),
       });
       if (!res.ok) throw new Error('request failed');
       setStatus('success');
@@ -102,20 +137,47 @@ export default function ContactForm() {
         {status === 'error' && (
           <div role="alert" className="mb-6 flex items-start gap-3 rounded-2xl bg-destructive p-4 text-destructive-foreground">
             <Icon name="ExclamationTriangleIcon" size={22} className="shrink-0" />
-            <p className="text-[15px] font-medium">{t.contact.failure}</p>
+            <p className="text-[15px] font-medium">
+              {t.contact.failure}
+              {hasEmail && (
+                <>
+                  {' '}
+                  {t.contact.emailFallback}{' '}
+                  <a href={`mailto:${siteConfig.contactEmail}`} className="underline">{siteConfig.contactEmail}</a>
+                </>
+              )}
+            </p>
           </div>
         )}
 
         <div className="grid gap-5 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <label htmlFor="request" className={labelClass}>{t.contact.request}</label>
+            <select id="request" className={fieldClass} value={values.request} onChange={(e) => update('request', e.target.value)}>
+              {t.contact.requests.map((r, i) => (
+                <option key={r} value={String(i)}>{r}</option>
+              ))}
+            </select>
+          </div>
           <div>
             <label htmlFor="name" className={labelClass}>{t.contact.name}</label>
             <input id="name" className={fieldClass} value={values.name} onChange={(e) => update('name', e.target.value)} aria-invalid={!!errors.name} aria-describedby={errors.name ? 'name-error' : undefined} autoComplete="name" />
             {err('name')}
           </div>
           <div>
-            <label htmlFor="email" className={labelClass}>{t.contact.email}</label>
-            <input id="email" type="email" className={fieldClass} value={values.email} onChange={(e) => update('email', e.target.value)} aria-invalid={!!errors.email} aria-describedby={errors.email ? 'email-error' : undefined} autoComplete="email" />
-            {err('email')}
+            <label htmlFor="company" className={labelClass}>{t.contact.company}</label>
+            <input id="company" className={fieldClass} value={values.company} onChange={(e) => update('company', e.target.value)} aria-invalid={!!errors.company} aria-describedby={errors.company ? 'company-error' : undefined} autoComplete="organization" />
+            {err('company')}
+          </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="type" className={labelClass}>{t.contact.type}</label>
+            <select id="type" className={fieldClass} value={values.type} onChange={(e) => update('type', e.target.value)} aria-invalid={!!errors.type} aria-describedby={errors.type ? 'type-error' : undefined}>
+              <option value="" />
+              {t.contact.types.map((ty, i) => (
+                <option key={ty} value={String(i)}>{ty}</option>
+              ))}
+            </select>
+            {err('type')}
           </div>
           <div>
             <label htmlFor="phone" className={labelClass}>{t.contact.phone}</label>
@@ -128,34 +190,29 @@ export default function ContactForm() {
             {err('phone')}
           </div>
           <div>
-            <label htmlFor="company" className={labelClass}>{t.contact.company}</label>
-            <input id="company" className={fieldClass} value={values.company} onChange={(e) => update('company', e.target.value)} aria-invalid={!!errors.company} aria-describedby={errors.company ? 'company-error' : undefined} autoComplete="organization" />
-            {err('company')}
+            <label htmlFor="email" className={labelClass}>{t.contact.email}</label>
+            <input id="email" type="email" className={fieldClass} value={values.email} onChange={(e) => update('email', e.target.value)} aria-invalid={!!errors.email} aria-describedby={errors.email ? 'email-error' : undefined} autoComplete="email" />
+            {err('email')}
           </div>
           <div>
-            <label htmlFor="type" className={labelClass}>{t.contact.type}</label>
-            <select id="type" className={fieldClass} value={values.type} onChange={(e) => update('type', e.target.value)} aria-invalid={!!errors.type} aria-describedby={errors.type ? 'type-error' : undefined}>
-              <option value="" />
-              {t.contact.types.map((ty) => (
-                <option key={ty} value={ty}>{ty}</option>
-              ))}
-            </select>
-            {err('type')}
+            <label htmlFor="city" className={labelClass}>{t.contact.city} <span className="font-normal text-muted-foreground">{t.contact.optional}</span></label>
+            <input id="city" className={fieldClass} value={values.city} onChange={(e) => update('city', e.target.value)} placeholder="Marrakech, Casablanca, Tanger…" autoComplete="address-level2" />
           </div>
           <div>
-            <label htmlFor="city" className={labelClass}>{t.contact.city}</label>
-            <input id="city" className={fieldClass} value={values.city} onChange={(e) => update('city', e.target.value)} aria-invalid={!!errors.city} aria-describedby={errors.city ? 'city-error' : undefined} placeholder="Marrakech, Casablanca, Tanger…" autoComplete="address-level2" />
-            {err('city')}
-          </div>
-          <div>
-            <label htmlFor="sites" className={labelClass}>{t.contact.sites}</label>
+            <label htmlFor="sites" className={labelClass}>{t.contact.sites} <span className="font-normal text-muted-foreground">{t.contact.optional}</span></label>
             <input id="sites" type="number" min={1} className={fieldClass} value={values.sites} onChange={(e) => update('sites', e.target.value)} />
           </div>
         </div>
 
         <div className="mt-5">
-          <label htmlFor="message" className={labelClass}>{t.contact.message}</label>
-          <textarea id="message" rows={4} className={`${fieldClass} py-3`} value={values.message} onChange={(e) => update('message', e.target.value)} />
+          <label htmlFor="message" className={labelClass}>{t.contact.message} <span className="font-normal text-muted-foreground">{t.contact.optional}</span></label>
+          <textarea id="message" rows={4} className={`${fieldClass} py-3`} value={values.message} onChange={(e) => update('message', e.target.value)} placeholder={t.contact.needHint} />
+        </div>
+
+        {/* Honeypot: hidden from humans, bots tend to fill it */}
+        <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+          <label htmlFor="website">Website</label>
+          <input id="website" name="website" tabIndex={-1} autoComplete="off" value={values.website} onChange={(e) => update('website', e.target.value)} />
         </div>
 
         <div className="mt-5">
@@ -186,21 +243,29 @@ export default function ContactForm() {
       </form>
 
       <aside className="flex flex-col gap-5">
-        <div className="rounded-[2.5rem] bg-primary p-8 text-primary-foreground">
-          <Icon name="ChatBubbleLeftRightIcon" size={32} className="text-accent" />
-          <h2 className="mt-4 font-serif-accent text-2xl font-medium">{t.contact.whatsapp}</h2>
-          <p className="mt-2 text-[15px] opacity-85">{siteConfig.contactEmail}</p>
-          <a
-            href={whatsappLink(t.contact.whatsappMsg)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-flex min-h-[48px] items-center rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground transition-transform hover:scale-[1.04]"
-          >
-            {t.contact.whatsapp}
-          </a>
-        </div>
+        {(hasWhatsapp || hasEmail) && (
+          <div className="rounded-[2.5rem] bg-primary p-8 text-primary-foreground">
+            <Icon name="ChatBubbleLeftRightIcon" size={32} className="text-accent" />
+            {hasEmail && (
+              <p className="mt-4 text-[15px] opacity-90">
+                <a href={`mailto:${siteConfig.contactEmail}`} className="underline underline-offset-4">{siteConfig.contactEmail}</a>
+              </p>
+            )}
+            {hasWhatsapp && (
+              <a
+                href={whatsappLink(t.contact.whatsappMsg)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 inline-flex min-h-[48px] items-center rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground transition-transform hover:scale-[1.04]"
+              >
+                {t.contact.whatsapp}
+              </a>
+            )}
+          </div>
+        )}
         <div className="rounded-[2.5rem] border border-border bg-secondary p-8">
           <p className="text-[15px] leading-relaxed text-foreground">{t.limits.dont}</p>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">{t.footer.disclaimer}</p>
         </div>
       </aside>
     </div>

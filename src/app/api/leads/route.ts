@@ -17,7 +17,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: 'Invalid payload' }, { status: 400 });
   }
 
-  if (!payload.name || !payload.email || !payload.consent) {
+  // Honeypot: bots fill the hidden field. Pretend success, deliver nothing.
+  if (typeof payload.website === 'string' && payload.website.trim() !== '') {
+    return NextResponse.json({ ok: true });
+  }
+
+  const tooLong = Object.values(payload).some((v) => typeof v === 'string' && v.length > 3000);
+  if (tooLong) {
+    return NextResponse.json({ ok: false, error: 'Payload too large' }, { status: 413 });
+  }
+
+  const email = typeof payload.email === 'string' ? payload.email : '';
+  if (!payload.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !payload.company || !payload.phone || !payload.consent) {
     return NextResponse.json({ ok: false, error: 'Missing required fields' }, { status: 422 });
   }
 
@@ -25,7 +36,7 @@ export async function POST(request: Request) {
     const upstream = await fetch(webhook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...payload, receivedAt: new Date().toISOString() }),
+      body: JSON.stringify({ ...payload, website: undefined, receivedAt: new Date().toISOString() }),
     });
     if (!upstream.ok) {
       return NextResponse.json({ ok: false, error: 'Upstream rejected' }, { status: 502 });

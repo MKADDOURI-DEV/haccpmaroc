@@ -6,28 +6,38 @@ import DemoCta from '@/components/DemoCta';
 import FaqAccordion from '@/components/FaqAccordion';
 import JsonLd from '@/components/JsonLd';
 import HeroSection from './components/HeroSection';
+import HaccpSolutions from './components/HaccpSolutions';
 import WorkflowSection from './components/WorkflowSection';
-import SolutionsBento from './components/SolutionsBento';
-import CompareSection from './components/CompareSection';
+import ComplianceSection from './components/ComplianceSection';
 import LimitsSection from './components/LimitsSection';
+import TraceabilitySection from './components/TraceabilitySection';
+import PaperToDigitalSection from './components/PaperToDigitalSection';
+import AgroTeaser from './components/AgroTeaser';
+import SolutionsBento from './components/SolutionsBento';
+import CertificationSection from './components/CertificationSection';
 
 export const metadata: Metadata = {
-  title: 'Logiciel HACCP Maroc — suivi des températures et de l’hygiène',
+  title: 'Logiciel HACCP Maroc — conformité sanitaire, traçabilité alimentaire et digitalisation',
   description:
-    'Logiciel HACCP pour hôtels, riads et restaurants au Maroc : centralisez contrôles, températures, nettoyage et traçabilité. Demandez une démo.',
+    'Logiciel HACCP au Maroc : digitalisation HACCP, traçabilité alimentaire et organisation des documents pour préparer le contrôle ONSSA. Solutions agroalimentaires, hôtels et restaurants.',
   alternates: { canonical: '/' },
 };
 
 export default function HomePage() {
   return (
     <main className="relative">
-      <JsonLd />
+      <JsonLd withFaq />
       <Header />
       <HeroSection />
+      <HaccpSolutions />
       <WorkflowSection />
-      <SolutionsBento />
-      <CompareSection />
+      <ComplianceSection />
       <LimitsSection />
+      <TraceabilitySection />
+      <PaperToDigitalSection />
+      <AgroTeaser />
+      <SolutionsBento />
+      <CertificationSection />
       <FaqAccordion />
       <DemoCta />
       <Footer />

@@ -70,18 +70,22 @@ export default function HeroSection() {
           <p className="mt-6 max-w-xl text-lg text-background opacity-90 sm:text-xl">{t.hero.text}</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/contact"
+              href="/contact?demande=demo"
               className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-accent px-8 text-base font-semibold text-accent-foreground transition-transform hover:scale-[1.04]">
-              
               {t.hero.primary}
             </Link>
             <Link
-              href="/features"
+              href="/contact?demande=devis"
               className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-background/40 bg-background/10 px-8 text-base font-semibold text-background backdrop-blur transition-colors hover:bg-background/20">
-              
               {t.hero.secondary}
             </Link>
           </div>
+          <Link
+            href="/solutions-agroalimentaires"
+            className="mt-5 inline-flex min-h-[44px] items-center gap-2 text-base font-semibold text-background underline-offset-4 hover:underline">
+            {t.hero.discover}
+            <Icon name="ArrowRightIcon" size={18} className="rtl:rotate-180" />
+          </Link>
         </div>
 
         <div className="relative">

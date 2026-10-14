@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -6,9 +6,9 @@ import ContactHero from './components/ContactHero';
 import ContactForm from './components/ContactForm';
 
 export const metadata: Metadata = {
-  title: 'Demander une démonstration HACCP — contact',
+  title: 'Demander un devis ou une démonstration HACCP — contact',
   description:
-    'Demandez une démonstration du logiciel HACCP pour votre hôtel, riad ou restaurant au Maroc. Réponse personnalisée de notre équipe.',
+    'Demandez un devis ou une démonstration du logiciel HACCP pour votre entreprise agroalimentaire, hôtel, riad ou restaurant au Maroc. Réponse de notre équipe.',
   alternates: { canonical: '/contact' },
 };
 
@@ -19,7 +19,9 @@ export default function ContactPage() {
       <ContactHero />
       <section className="bg-background px-4 pb-20 pt-12 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-7xl">
-          <ContactForm />
+          <Suspense fallback={null}>
+            <ContactForm />
+          </Suspense>
         </div>
       </section>
       <Footer />
