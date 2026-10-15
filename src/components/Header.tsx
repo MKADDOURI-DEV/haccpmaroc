@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 import { siteConfig } from '@/config/site';
@@ -13,6 +14,8 @@ export default function Header() {
   const { t, lang, setLang } = useTranslation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === '/';
 
   useEffect(() => {
     const onScroll = () => {
@@ -53,7 +56,11 @@ export default function Header() {
               key={l.href}
               href={l.href}
               className={`text-[15px] font-medium transition-colors ${
-                scrolled ? 'text-muted-foreground hover:text-primary' : 'text-white hover:text-white/80'
+                scrolled
+                  ? 'text-muted-foreground hover:text-primary'
+                  : isHome
+                    ? 'font-semibold text-primary hover:text-primary/70'
+                    : 'text-white hover:text-white/80'
               }`}
             >
               {l.label}
