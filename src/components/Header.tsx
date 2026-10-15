@@ -42,7 +42,7 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-10">
         <Link href="/" className="flex items-center gap-2" aria-label={siteConfig.brandName}>
           <AppLogo size={40} />
-          <span className="font-semibold tracking-tight text-lg text-primary">
+          <span className={`font-semibold tracking-tight text-lg transition-colors ${scrolled ? 'text-primary' : 'text-white'}`}>
             {siteConfig.brandName}
           </span>
         </Link>
@@ -52,7 +52,9 @@ export default function Header() {
             <Link
               key={l.href}
               href={l.href}
-              className="text-[15px] font-medium text-muted-foreground transition-colors hover:text-primary"
+              className={`text-[15px] font-medium transition-colors ${
+                scrolled ? 'text-muted-foreground hover:text-primary' : 'text-white hover:text-white/80'
+              }`}
             >
               {l.label}
             </Link>
