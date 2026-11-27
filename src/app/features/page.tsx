@@ -7,9 +7,9 @@ import FeaturesHero from './components/FeaturesHero';
 import FeaturesExplorer from './components/FeaturesExplorer';
 
 export const metadata: Metadata = {
-  title: 'Fonctionnalités HACCP — températures, nettoyage, traçabilité',
+  title: 'Fonctionnalités HACCP : réception, températures, traçabilité, IoT',
   description:
-    'Neuf modules proposés pour structurer le suivi HACCP : températures, check-lists, traçabilité, non-conformités et rapports exportables.',
+    'Vingt modules pour structurer le suivi HACCP : réception, températures, décongélation, nettoyage, huiles de friture, étiquetage, production, lots et traçabilité, IoT et plus.',
   alternates: { canonical: '/features' },
 };
 

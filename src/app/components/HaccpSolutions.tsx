@@ -7,15 +7,9 @@ import Reveal from '@/components/Reveal';
 import SectionHeading from '@/components/SectionHeading';
 import StatusChip from '@/components/StatusChip';
 import { useTranslation } from '@/context/LanguageContext';
+import { featureIcons } from '@/config/features';
 
-const ids = ['temp', 'clean', 'check', 'docs', 'reports'];
-const iconMap: Record<string, string> = {
-  temp: 'BeakerIcon',
-  clean: 'SparklesIcon',
-  check: 'ClipboardDocumentCheckIcon',
-  docs: 'DocumentTextIcon',
-  reports: 'ChartBarIcon',
-};
+const ids = ['reception', 'temp', 'clean', 'trace', 'labels'];
 
 export default function HaccpSolutions() {
   const { t } = useTranslation();
@@ -34,7 +28,7 @@ export default function HaccpSolutions() {
                 <article className="flex h-full flex-col rounded-[2rem] border border-border bg-card p-7 transition-shadow hover:shadow-xl">
                   <div className="flex items-center justify-between">
                     <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-primary">
-                      <Icon name={iconMap[item.id]} size={26} />
+                      <Icon name={featureIcons[item.id]} size={26} />
                     </span>
                     <StatusChip featureId={item.id} />
                   </div>

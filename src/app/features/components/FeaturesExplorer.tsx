@@ -5,63 +5,13 @@ import Icon from '@/components/ui/AppIcon';
 import AppImage from '@/components/ui/AppImage';
 import Reveal from '@/components/Reveal';
 import { useTranslation } from '@/context/LanguageContext';
-
-const iconMap: Record<string, string> = {
-  temp: 'BeakerIcon',
-  clean: 'SparklesIcon',
-  check: 'ClipboardDocumentCheckIcon',
-  trace: 'QrCodeIcon',
-  nc: 'ExclamationTriangleIcon',
-  docs: 'DocumentTextIcon',
-  alerts: 'BellAlertIcon',
-  reports: 'ChartBarIcon',
-  multi: 'BuildingOffice2Icon'
-};
-
-const imageMap: Record<string, {src: string;alt: string;}> = {
-  temp: {
-    src: "https://img.rocket.new/generatedImages/rocket_gen_img_17656913a-1772232320256.png",
-    alt: 'Chambre froide professionnelle avec produits alimentaires rangés'
-  },
-  clean: {
-    src: "https://img.rocket.new/generatedImages/rocket_gen_img_1ac18d062-1784100421862.png",
-    alt: 'Plan de travail en inox nettoyé dans une cuisine professionnelle'
-  },
-  check: {
-    src: "https://img.rocket.new/generatedImages/rocket_gen_img_11440eb6d-1772232934789.png",
-    alt: 'Équipe de cuisine suivant une liste de contrôle avant le service'
-  },
-  trace: {
-    src: "https://img.rocket.new/generatedImages/rocket_gen_img_11e6a57a5-1770818707126.png",
-    alt: 'Produits alimentaires étiquetés avec dates visibles'
-  },
-  nc: {
-    src: "https://img.rocket.new/generatedImages/rocket_gen_img_12f26172c-1772232102317.png",
-    alt: 'Chef vérifiant une préparation dans une cuisine professionnelle'
-  },
-  docs: {
-    src: "https://img.rocket.new/generatedImages/rocket_gen_img_15c437b57-1772542593993.png",
-    alt: 'Documents et classeurs de procédures organisés sur un bureau'
-  },
-  alerts: {
-    src: "https://img.rocket.new/generatedImages/rocket_gen_img_1bbbe35cd-1766709251678.png",
-    alt: 'Smartphone affichant des notifications de rappel'
-  },
-  reports: {
-    src: "https://img.rocket.new/generatedImages/rocket_gen_img_4e4458b8c-1791979614263.png",
-    alt: 'Écran affichant des graphiques de rapports de suivi'
-  },
-  multi: {
-    src: "https://images.unsplash.com/photo-1721314521696-047fa33eebfb",
-    alt: 'Hôtel avec plusieurs bâtiments et piscine'
-  }
-};
+import { featureIcons, featureImages, defaultFeatureImage } from '@/config/features';
 
 export default function FeaturesExplorer() {
   const { t } = useTranslation();
   const [active, setActive] = useState(0);
   const current = t.features.items[active];
-  const img = imageMap[current.id];
+  const img = featureImages[current.id] ?? defaultFeatureImage;
 
   return (
     <section className="bg-background px-4 py-16 sm:px-6 lg:px-10">
@@ -94,7 +44,7 @@ export default function FeaturesExplorer() {
                       isActive ? 'bg-accent text-accent-foreground' : 'bg-secondary text-primary'}`
                       }>
                       
-                      <Icon name={iconMap[f.id]} size={22} />
+                      <Icon name={featureIcons[f.id] ?? 'Squares2X2Icon'} size={22} />
                     </span>
                     <span className="flex-1">
                       <span className="block text-base font-semibold">{f.t}</span>
