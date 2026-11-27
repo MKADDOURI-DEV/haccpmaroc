@@ -1,21 +1,30 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google';
+import localFont from 'next/font/local';
 import '../styles/tailwind.css';
 import { siteConfig } from '@/config/site';
 import { LanguageProvider } from '@/context/LanguageContext';
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+const jakarta = localFont({
+  src: './fonts/PlusJakartaSans.ttf',
+  weight: '400 700',
   variable: '--font-plus-jakarta-sans',
   display: 'swap',
 });
 
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  style: ['normal', 'italic'],
+const fraunces = localFont({
+  src: [
+    {
+      path: './fonts/Fraunces.ttf',
+      weight: '400 600',
+      style: 'normal',
+    },
+    {
+      path: './fonts/Fraunces-Italic.ttf',
+      weight: '400 600',
+      style: 'italic',
+    },
+  ],
   variable: '--font-fraunces',
   display: 'swap',
 });
