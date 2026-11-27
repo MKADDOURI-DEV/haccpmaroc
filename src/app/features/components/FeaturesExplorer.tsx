@@ -5,13 +5,13 @@ import Icon from '@/components/ui/AppIcon';
 import AppImage from '@/components/ui/AppImage';
 import Reveal from '@/components/Reveal';
 import { useTranslation } from '@/context/LanguageContext';
-import { featureIcons, featureImages, defaultFeatureImage } from '@/config/features';
+import { featureIcons, featureImages } from '@/config/features';
 
 export default function FeaturesExplorer() {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   const [active, setActive] = useState(0);
   const current = t.features.items[active];
-  const img = featureImages[current.id] ?? defaultFeatureImage;
+  const img = featureImages[current.id];
 
   return (
     <section className="bg-background px-4 py-16 sm:px-6 lg:px-10">
@@ -66,11 +66,12 @@ export default function FeaturesExplorer() {
             <div className="overflow-hidden rounded-[2.5rem] border border-border bg-card shadow-xl">
               <div className="relative h-64 w-full sm:h-80">
                 <AppImage
-                  src={img.src}
-                  alt={img.alt}
+                  key={current.id}
+                  src={img?.src ?? '/assets/images/no_image.png'}
+                  alt={img?.alt[lang] ?? current.t}
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover" />
+                  className="object-cover object-center" />
                 
               </div>
               <div className="p-8">
